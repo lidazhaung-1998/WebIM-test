@@ -41,7 +41,7 @@ WebIM.conn.listen({
         // 登录或注册成功后 跳转到好友页面
         var storeState = Vue.$store.state.login;
         var username = storeState.userInfo.username;
-        var redirect = Vue.$route.query.redirect || localStorage.getItem('currPath') || '/chat/chat';
+        var redirect = Vue.$route.query.redirect || localStorage.getItem('currPath') || '/chat/friends';
         var path = `${redirect}?user=${username}`;
         redirect !== Vue.$route.path && Vue.$router.push(path);
     },
@@ -49,19 +49,35 @@ WebIM.conn.listen({
 
     }, // 连接关闭回调
     onTextMessage: function (message) {
-
+        console.log(message);
+        var tb = {
+            from: message.from,
+            to: message.to,
+            time: Number(message.time),
+            messageContext: message,
+            showLastMsg: message.data,
+            isme: false
+        }
+        if (tb.from == WebIM.conn.user) {
+            tb.from = message.to;
+            message.right = true;
+            tb.isme = true;
+        } else {
+            message.right = false;
+        }
+        Vue.$store.commit('updateFriendsList', tb)
     }, // 收到文本消息
     onEmojiMessage: function (message) {
-
+        console.log(message)
     }, // 收到表情消息
     onPictureMessage: function (message) {
-
+        console.log(message)
     }, // 收到图片消息
     onCmdMessage: function (message) {
-
+        console.log(message)
     }, // 收到命令消息
     onAudioMessage: function (message) {
-
+        console.log(message)
     }, // 收到音频消息
     onLocationMessage: function (message) {
 

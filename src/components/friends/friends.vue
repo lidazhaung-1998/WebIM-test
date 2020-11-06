@@ -13,7 +13,6 @@
         name: "friends",
         created() {
             this.in();
-
         },
         beforeMount() {
 

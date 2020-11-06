@@ -3,9 +3,8 @@ import VueRouter from 'vue-router'
 import store from '../store/index'
 import Login from '../views/login'
 import chat from '../views/chat'
-
+import friends from '../components/friends/friends'
 Vue.use(VueRouter)
-
 const routes = [
     {
         path: '/',
@@ -31,7 +30,7 @@ const routes = [
             {
                 path: 'friends',
                 name: 'friendsList',
-                component: () => import('../components/friends/friends'),
+                component: friends,
                 meta: {
                     title: '好友',
                     auth: true

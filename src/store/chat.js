@@ -9,7 +9,17 @@ const chat = {
 
     mutations: {
         updateFriendsList(state, payload) {
-            state.friendsList.unshift(payload);
+            var list = state.msgList.friendsList;
+            loop:for (var i = 0; i < list.length; i++) {
+                if (list[i].name == payload.from) {
+                    var item = list[i];
+                    item.showLastMsg = payload.showLastMsg;
+                    item.time = payload.time;
+                    item.data.unshift(payload.messageContext);
+                    console.log(list[i]);
+                    break loop;
+                }
+            }
         },
         updateFriendsBlackObj(state, payload) {
             state.friendsBlackObj.count = payload.count;
@@ -38,7 +48,7 @@ const chat = {
                             var tb = new Object();
                             if (msgArr.length != 0) {
                                 var len = msgArr.length - 1;
-                                tb.name = item.name;
+                                tb.name = item.name || item.groupname;
                                 msgArr.forEach(obj => {
                                     if (obj.from == payload.user) {
                                         obj.right = true;
@@ -50,10 +60,11 @@ const chat = {
                                 tb.data = msgArr;
                                 tb.showLastMsg = msgArr[len].data;
                             } else {
-                                tb.name = item.name;
+                                tb.name = item.name || item.groupname;
                                 tb.time = 0;
                                 tb.data = [];
                                 tb.showLastMsg = '';
+                                tb.right = false;
                             }
                             list.push(tb);
                         }

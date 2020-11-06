@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <header>
-            <Top></Top>
+            <appHead></appHead>
         </header>
         <main class="wrap">
             <transition name="route-move">
@@ -19,15 +19,27 @@
     </div>
 </template>
 <script>
-    import Top from './components/header/header';
+    import appHead from './components/appHead/appHead';
     import WebIM from "./utils/WebIM";
 
     export default {
         created() {
-            this.selectedLabelDefault = localStorage.getItem("currPath") || this.$route.path;
+            this.selectedLabelDefault = this.defaultSelect;
             this.opened();
         },
         mounted() {
+        },
+        computed: {
+            defaultSelect() {
+                var currPath = localStorage.getItem('currPath');
+                var path = '';
+                this.tabs.forEach(item => {
+                    if (currPath != item.value) {
+                        path = "/chat/friends";
+                    }
+                })
+                return path || currPath;
+            }
         },
         data() {
             return {
@@ -78,7 +90,7 @@
             },
         },
         components: {
-            Top
+            appHead
         },
     };
 
@@ -89,6 +101,7 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+
         .route-move-enter {
             transform: translate3d(-100%, 0, 0);
         }

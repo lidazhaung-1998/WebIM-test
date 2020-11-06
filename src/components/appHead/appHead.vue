@@ -20,7 +20,7 @@
 
 <script>
     export default {
-        name: "header",
+        name: "appHead",
         data() {
             return {
                 showAddSelect: false
