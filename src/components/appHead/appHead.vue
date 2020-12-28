@@ -7,12 +7,12 @@
             {{ $store.state.header.title }}
             <span class="title"></span>
         </div>
-        <div class="addBtn" @click="handleAddBtn">
-            <div class="icon"></div>
-            <div class="select" v-if="showAddSelect">
-                <div class="btn">添加好友</div>
-                <div class="btn">申请入群</div>
-                <div class="btn">创建群组</div>
+        <div class="optionBtn" @click="handleAddBtn">
+            <div class="icon" :class="opt.icon"></div>
+            <div class="wallTransparent" v-if="showOption" @click="handleFN">
+                <div class="select">
+                    <div class="btn" v-for="item in opt.btns">{{item}}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -21,16 +21,28 @@
 <script>
     export default {
         name: "appHead",
+        created() {
+        },
         data() {
             return {
-                showAddSelect: false
+                showOption: false
+            }
+        },
+        computed: {
+            opt() {
+                return this.$store.state.header.options;
             }
         },
         methods: {
-            handleAddBtn() {
-                this.showAddSelect = true;
+            handleFN(ev) {
+                ev.stopPropagation();
+                this.showOption = false;
             },
-        }
+            handleAddBtn() {
+                this.showOption = true;
+            }
+        },
+        components: {}
     }
 </script>
 
@@ -65,21 +77,31 @@
             transform: translateX(-50%);
         }
 
-        .addBtn {
+        .optionBtn {
             position: absolute;
             right: 0;
             padding: .2rem;
+            color: #fff;
+            font-size: 0.6rem;
 
             .icon {
                 font-size: .55rem;
                 color: #fff;
             }
 
+            .wallTransparent {
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 2;
+            }
+
             .select {
                 position: absolute;
-                z-index: 1;
                 right: .3rem;
-                top: .8rem;
+                top: 1rem;
                 background-color: #fff;
                 border-radius: .15rem;
 

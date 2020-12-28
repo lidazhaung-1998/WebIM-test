@@ -24,50 +24,36 @@
 
     export default {
         created() {
-            this.selectedLabelDefault = this.defaultSelect;
             this.opened();
+            this.$store.commit("changedTitle", this.$route.name);
         },
         mounted() {
         },
-        computed: {
-            defaultSelect() {
-                var currPath = localStorage.getItem('currPath');
-                var path = '';
-                this.tabs.forEach(item => {
-                    if (currPath != item.value) {
-                        path = "/chat/friends";
-                    }
-                })
-                return path || currPath;
-            }
-        },
+        computed: {},
         data() {
             return {
-                selectedLabelDefault: "",
+                selectedLabelDefault: "好友",
                 tabs: [
                     {
                         label: "好友",
-                        icon: "cubeic-game",
-                        value: "/chat/friends",
+                        icon: "cubeic-game"
                     },
                     {
                         label: "群组",
-                        icon: "cubeic-navigation",
-                        value: "/chat/group",
+                        icon: "cubeic-navigation"
                     },
                     {
                         label: "我的",
-                        icon: "cubeic-person",
-                        value: "/chat/me",
+                        icon: "cubeic-person"
                     },
                 ],
             };
         },
         watch: {
             $route(route) {
-                this.selectedLabelDefault = route.path;
+                this.selectedLabelDefault = route.name;
                 localStorage.setItem("currPath", route.path);
-                this.$store.commit("changedTitle", document.title);
+                this.$store.commit("changedTitle", route.name);
             },
         },
         methods: {
@@ -84,7 +70,7 @@
             },
             changeHandle(val) {
                 this.$router.push({
-                    path: val,
+                    name: val,
                     query: this.$route.query,
                 });
             },
@@ -93,7 +79,6 @@
             appHead
         },
     };
-
 </script>
 
 <style lang="scss">

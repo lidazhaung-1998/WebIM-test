@@ -39,10 +39,8 @@ if (!WebIM.conn.apiUrl) {
 WebIM.conn.listen({
     onOpened: function (message) { // 连接成功回调
         // 登录或注册成功后 跳转到好友页面
-        var storeState = Vue.$store.state.login;
-        var username = storeState.userInfo.username;
         var redirect = Vue.$route.query.redirect || localStorage.getItem('currPath') || '/chat/friends';
-        var path = `${redirect}?user=${username}`;
+        var path = `${redirect}?user=${WebIM.conn.user}`;
         redirect !== Vue.$route.path && Vue.$router.push(path);
     },
     onClosed: function (message) {
@@ -55,17 +53,14 @@ WebIM.conn.listen({
             to: message.to,
             time: Number(message.time),
             messageContext: message,
-            showLastMsg: message.data,
-            isme: false
+            showLastMsg: message.data
         }
-        if (tb.from == WebIM.conn.user) {
-            tb.from = message.to;
-            message.right = true;
-            tb.isme = true;
-        } else {
-            message.right = false;
+        if (message.type === "groupchat") {
+            tb.msgType = "groupList";
+        } else if (message.type === "chat") {
+            tb.msgType = "friendsList";
         }
-        Vue.$store.commit('updateFriendsList', tb)
+        Vue.$store.commit('updateFriendsListMsg', tb)
     }, // 收到文本消息
     onEmojiMessage: function (message) {
         console.log(message)

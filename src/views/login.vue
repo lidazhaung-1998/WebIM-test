@@ -195,12 +195,11 @@
                 var errMsg = JSON.parse(err.data);
                 if (errMsg.error === 'duplicate_unique_property_exists') {
                     // 用户名重复
-                    let toast = this.$createToast({
+                    this.$createToast({
                         txt: "用户名重复",
                         time: 1500,
                         type: 'error'
-                    });
-                    toast.show();
+                    }).show();
                 }
             },
 

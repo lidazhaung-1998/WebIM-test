@@ -2,7 +2,7 @@
     <div class="LIST_BOX">
         <cube-scroll ref="scroll" :options="options" @pulling-down="onPullingDown" :data="finalList">
             <ul class="list">
-                <li class="item" v-for="item in finalList">
+                <li class="item" v-for="item in finalList" :key="item.name || item.groupname">
                     <div class="infoWrap">
                         <div class="userHead">
                             <div class="head"></div>
@@ -14,7 +14,7 @@
                                         <span class="userName">{{ item.name || item.groupname }}</span>
                                     </div>
                                     <div class="messageDate">
-                                        <span class="messageTime">{{ translateTime('yyyy-MM-dd-hh-mm',item.time) }}</span>
+                                        <span class="messageTime">{{ translateTime('yyyy-MM-dd hh:mm:ss',item.time) }}</span>
                                     </div>
                                 </div>
 

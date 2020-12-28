@@ -4,6 +4,7 @@ import store from '../store/index'
 import Login from '../views/login'
 import chat from '../views/chat'
 import friends from '../components/friends/friends'
+
 Vue.use(VueRouter)
 const routes = [
     {
@@ -12,10 +13,9 @@ const routes = [
     },
     {
         path: '/login',
-        name: 'login',
+        name: '登录',
         component: Login,
         meta: {
-            title: "登录",
             logined: true
         },
     },
@@ -28,29 +28,34 @@ const routes = [
         },
         children: [
             {
+                path: 'talk',
+                name: 'talkPage',
+                component: () => import('../components/talk/talk'),
+                meta: {
+                    auth: true
+                }
+            },
+            {
                 path: 'friends',
-                name: 'friendsList',
+                name: '好友',
                 component: friends,
                 meta: {
-                    title: '好友',
                     auth: true
                 }
             },
             {
                 path: 'group',
-                name: 'groupList',
+                name: '群组',
                 component: () => import('../components/group/group'),
                 meta: {
-                    title: '群组',
                     auth: true
                 }
             },
             {
                 path: 'me',
-                name: 'meSettings',
+                name: '我的',
                 component: () => import('../components/me/me'),
                 meta: {
-                    title: '我的',
                     auth: true
                 }
             }
@@ -62,13 +67,9 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach(function (to, from, next) {
-    if (to.meta.title) {
-        document.title = to.meta.title;
-    } else {
-        document.title = "";
-    }
+    var token = store.state.login.userInfo.token;
     if (to.meta.auth) {
-        if (store.state.login.userInfo.token) {
+        if (token) {
             next();
         } else {
             router.push({
@@ -79,9 +80,8 @@ router.beforeEach(function (to, from, next) {
             })
             next();
         }
-    }
-    if (to.meta.logined) {
-        if (!store.state.login.userInfo.token) {
+    } else {
+        if (!token) {
             next();
         }
     }

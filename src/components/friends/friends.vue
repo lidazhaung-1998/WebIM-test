@@ -35,7 +35,6 @@
                         type: dif ? 'groupList' : 'friendsList',
                     });
                 }
-
             },
             refresh(fresh) {
                 setTimeout(function () {
@@ -50,7 +49,8 @@
             }),
             finalUserList() {
                 return this.userList.filter(item => {
-                    if (!this.userBlack.data.includes(item.name)) {
+                    var historyMSG = this.userBlack.data;
+                    if (historyMSG && !historyMSG.includes(item.name)) {
                         return item;
                     }
                 });

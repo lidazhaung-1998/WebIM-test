@@ -6,17 +6,18 @@ const chat = {
         },
         friendsBlackObj: {},
     },
-
     mutations: {
-        updateFriendsList(state, payload) {
-            var list = state.msgList.friendsList;
+        addFriendsList(state, payload) {
+            state.msgList[payload.type].push(payload.data);
+        },
+        updateFriendsListMsg(state, payload) {
+            var list = state.msgList[payload.msgType];
             loop:for (var i = 0; i < list.length; i++) {
-                if (list[i].name == payload.from) {
-                    var item = list[i];
+                var item = list[i];
+                if ((item.name == payload.from || item.name == payload.to) || item.groupid == payload.to) {
                     item.showLastMsg = payload.showLastMsg;
                     item.time = payload.time;
                     item.data.unshift(payload.messageContext);
-                    console.log(list[i]);
                     break loop;
                 }
             }
@@ -32,6 +33,7 @@ const chat = {
         getUserFriendsList({commit, state}, payload) {
             var list = [],
                 timer = null;
+            let store = state;
             const succ = function (res) {
                 var array = [];
                 if (Array.isArray(res)) {
@@ -39,23 +41,18 @@ const chat = {
                 } else {
                     array = res.data;
                 }
-                array.forEach((item) => {
+                array.forEach((item, i) => {
                     WebIM.conn.fetchHistoryMessages({
                         queue: item.name || item.groupid,
                         isGroup: payload.isGroup,
                         count: payload.count,
                         success: function (msgArr) {
                             var tb = new Object();
+                            tb.groupid = item.groupid;
+                            payload.isGroup ? (tb.msgType = "groupList") : (tb.msgType = "friendsList");
                             if (msgArr.length != 0) {
                                 var len = msgArr.length - 1;
                                 tb.name = item.name || item.groupname;
-                                msgArr.forEach(obj => {
-                                    if (obj.from == payload.user) {
-                                        obj.right = true;
-                                    } else {
-                                        obj.right = false;
-                                    }
-                                })
                                 tb.time = Number(msgArr[len].time);
                                 tb.data = msgArr;
                                 tb.showLastMsg = msgArr[len].data;
@@ -66,16 +63,11 @@ const chat = {
                                 tb.showLastMsg = '';
                                 tb.right = false;
                             }
+                            commit('addFriendsList', {type: payload.type, data: tb});
                             list.push(tb);
                         }
                     });
                 })
-                timer = setInterval(() => {
-                    if (list.length == array.length) {
-                        clearInterval(timer);
-                        state.msgList[payload.type] = list;
-                    }
-                }, 80)
             }
             if (payload.type == 'friendsList') {
                 WebIM.conn.getRoster({
@@ -86,7 +78,6 @@ const chat = {
                     success: succ
                 })
             }
-
         },
         getUserBlackList({commit}, payload) {
             WebIM.conn.getBlacklist({
@@ -101,24 +92,26 @@ const chat = {
     },
     getters: {
         getuserList(state) {
-            return state.msgList.friendsList.sort((n, m) => {
-                var a = n.time;
-                var b = m.time;
-                if (b > a) {
-                    return 1;
-                } else if (b == a) {
-                    return 0;
-                } else {
-                    return -1;
-                }
-            });
+            return state.msgList.friendsList.sort(mySort);
         },
         getUserBlack(state) {
             return state.friendsBlackObj;
         },
         getUserGroupList(state) {
-            return state.msgList.groupList;
+            return state.msgList.groupList.sort(mySort);
         }
+    }
+}
+
+function mySort(n, m) {
+    var a = n.time;
+    var b = m.time;
+    if (b > a) {
+        return 1;
+    } else if (b == a) {
+        return 0;
+    } else {
+        return -1;
     }
 }
 
