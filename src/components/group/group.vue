@@ -24,7 +24,6 @@
                 if (JSON.stringify(storeGroupList) == '[]') {
                     let {query, path} = this.$route;
                     let dif = path.indexOf('group') == -1 ? false : true;
-                    this.getUserBlackList();
                     this.getUserFriendsList({
                         user: query.user,
                         isGroup: dif,

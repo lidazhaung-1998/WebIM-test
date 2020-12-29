@@ -39,6 +39,7 @@ if (!WebIM.conn.apiUrl) {
 WebIM.conn.listen({
     onOpened: function (message) { // 连接成功回调
         // 登录或注册成功后 跳转到好友页面
+        Vue.$store.commit('changeStatus', true);
         var redirect = Vue.$route.query.redirect || localStorage.getItem('currPath') || '/chat/friends';
         var path = `${redirect}?user=${WebIM.conn.user}`;
         redirect !== Vue.$route.path && Vue.$router.push(path);
@@ -84,8 +85,44 @@ WebIM.conn.listen({
 
     }, // 收到视频消息
     onPresence: function (message) {
-
-
+        console.log('好友添加');
+        console.log(message);
+        var from = message.from;
+        if (message.type === "subscribe") {
+            Vue.$createDialog({
+                type: 'confirm',
+                icon: 'cubeic-alert',
+                title: '好友申请',
+                content: message.from + '请求添加您为好友',
+                maskClosable: false,
+                confirmBtn: {
+                    text: '同意'
+                },
+                cancelBtn: {
+                    text: '拒绝'
+                },
+                onConfirm: () => {
+                    WebIM.conn.acceptInvitation(from);
+                },
+                onCancel: () => {
+                    WebIM.conn.declineInvitation(from);
+                }
+            }).show();
+        }
+        if (message.type === "unsubscribed") {
+            Vue.$createToast({
+                txt: from + '已退订',
+                type: 'error',
+                time: 2500,
+            }).show();
+        }
+        if (message.type === "subscribed") {
+            Vue.$createToast({
+                txt: from + '已订阅',
+                type: 'correct',
+                time: 2500,
+            }).show();
+        }
     }, // 处理“广播”或“发布-订阅”消息，如联系人订阅请求、处理群组、聊天室被踢解散等消息
     onRoster: function (message) {
 
@@ -100,9 +137,9 @@ WebIM.conn.listen({
 
     }, // 本机网络掉线
     onError: function (message) {
-
         // 报错返回到登录页面
-        // Vue.$router.push({ path: '/login' });
+        Vue.$router.push({path: '/login'});
+        Vue.$store.commit('changedTitle', '登录');
     }, // 失败回调
     onRecallMessage: message => {
 
@@ -110,7 +147,6 @@ WebIM.conn.listen({
     onBlacklistUpdate: function (list) { // 黑名单变动
         // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
         // 更新好友黑名单
-
     },
     onReceivedMessage: function (message) {
 

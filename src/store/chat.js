@@ -61,7 +61,6 @@ const chat = {
                                 tb.time = 0;
                                 tb.data = [];
                                 tb.showLastMsg = '';
-                                tb.right = false;
                             }
                             commit('addFriendsList', {type: payload.type, data: tb});
                             list.push(tb);

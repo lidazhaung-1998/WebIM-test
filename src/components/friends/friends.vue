@@ -29,7 +29,7 @@
                     let dif = path.indexOf('group') == -1 ? false : true;
                     this.getUserBlackList();
                     this.getUserFriendsList({
-                        user: query.user,
+                        user: WebIM.conn.user,
                         isGroup: dif,
                         count: 10,
                         type: dif ? 'groupList' : 'friendsList',

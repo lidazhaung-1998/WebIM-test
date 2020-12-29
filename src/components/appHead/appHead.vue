@@ -1,31 +1,36 @@
 <template>
     <div class="head">
         <div class="iconBtn">
-            <i class="icon"></i>
+            <span class="icon"></span>
         </div>
         <div class="title">
             {{ $store.state.header.title }}
             <span class="title"></span>
         </div>
-        <div class="optionBtn" @click="handleAddBtn">
-            <div class="icon" :class="opt.icon"></div>
-            <div class="wallTransparent" v-if="showOption" @click="handleFN">
+        <div class="optionBtn">
+            <div class="icon" :class="opt.icon" @click="handleAddBtn" v-show="$store.state.header.status"></div>
+            <div class="wallTransparent" v-show="showOption" @click="handleFN">
                 <div class="select">
-                    <div class="btn" v-for="item in opt.btns">{{item}}</div>
+                    <div class="btn" v-for="item in opt.btns" @click="clickOption($event,item.id)">{{item.txt}}</div>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 
 <script>
+
     export default {
         name: "appHead",
         created() {
         },
         data() {
             return {
-                showOption: false
+                showOption: false,
+                val: '',
+                dialogT: '',
+                dialogP: ''
             }
         },
         computed: {
@@ -34,12 +39,53 @@
             }
         },
         methods: {
+            hideOPtion() {
+                this.showOption = false;
+            },
+            clickOption(ev, id) {
+                ev.stopPropagation();
+                this.hideOPtion();
+                if (id === 0) {
+                    this.dialogT = '添加好友';
+                    this.dialogP = '用户名';
+                    this.confirm = (e, v) => {
+                        console.log(v);
+                        WebIM.conn.addContact(v, '');
+                    };
+                }
+                if (id === 1) {
+                    this.dialogT = '申请入群';
+                    this.dialogP = '群组ID';
+                    this.confirm = (e, v) => {
+                        console.log(v)
+                    };
+                }
+                this.dialog();
+            },
+            dialog() {
+                this.$createDialog({
+                    type: 'prompt',
+                    title: this.dialogT,
+                    showClose: true,
+                    maskClosable: true,
+                    prompt: {
+                        value: this.val,
+                        placeholder: this.dialogP,
+                        autofocus: true
+                    },
+                    onConfirm: this.confirm,
+                    onCancel: () => {
+                        this.val = '';
+                    }
+                }).show();
+            },
             handleFN(ev) {
                 ev.stopPropagation();
-                this.showOption = false;
+                this.hideOPtion();
             },
             handleAddBtn() {
                 this.showOption = true;
+
             }
         },
         components: {}
